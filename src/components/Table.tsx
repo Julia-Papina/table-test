@@ -25,7 +25,12 @@ const buildTreeElements = (data: TableItem[]): TableItem[] => {
 };
 
 const Table: React.FC<TableProps> = ({ data }) => {
-  const [expandedRows, setExpandedRows] = useState<number[]>([]); //раскрытие строк
+  const [expandedRows, setExpandedRows] = useState<number[]>([]); // состояние раскрытие строк
+  const [filterActiveRows, setFilterActiveRows] = useState<boolean>(false); //состояние фильтрации строк
+
+  const handleFilterChange = () => {
+    setFilterActiveRows(!filterActiveRows);
+  };
 
   const handleRowClick = (id: number) => {
     if (expandedRows.includes(id)) {
@@ -36,6 +41,10 @@ const Table: React.FC<TableProps> = ({ data }) => {
   };
 
   const treeData = buildTreeElements(data);
+
+  const filteredData = filterActiveRows
+    ? treeData.filter((item) => item.isActive)
+    : treeData;
 
   // Функция для отрисовки строк таблицы и их дочерних элементов (если они есть)
   const renderRowTable = (item: TableItem, level: number = 0): JSX.Element => {
@@ -68,7 +77,9 @@ const Table: React.FC<TableProps> = ({ data }) => {
 
   return (
     <div>
-      <button className="filter-button">Активные</button>
+      <button className="filter-button" onClick={handleFilterChange}>
+        {filterActiveRows ? "Смотреть все" : "Активные"}
+      </button>
       <table className="table">
         <thead>
           <tr>
@@ -78,7 +89,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
             <th className="table__th">Статус</th>
           </tr>
         </thead>
-        <tbody> {treeData.map((item) => renderRowTable(item))}</tbody>
+        <tbody>{filteredData.map((item) => renderRowTable(item))}</tbody>
       </table>
     </div>
   );
