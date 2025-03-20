@@ -35,3 +35,26 @@
 .filter-button:hover {
   background-color: #754b0b;
 }
+
+.table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.table tr {
+  transition: background-color 0.3s ease;
+}
+
+.table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.table tr.active {
+  background-color: #e8f5e9;
+}
+
+.arrow-icon {
+    color:  #e69a5c;
+    margin-right: 5px;
+}
