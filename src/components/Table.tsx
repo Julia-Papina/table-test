@@ -68,8 +68,8 @@ const Table: React.FC<TableProps> = ({ data }) => {
     if (sortConfigRows !== null) {
       const { key, setting } = sortConfigRows;
       sortableData.sort((a, b) => {
-        const valueA = a[key] ?? ""; // Используем значение по умолчанию, если a[key] undefined
-        const valueB = b[key] ?? ""; // Используем значение по умолчанию, если b[key] undefined
+        const valueA = a[key] ?? ""; 
+        const valueB = b[key] ?? ""; 
 
         if (valueA < valueB) {
           return setting === "ascending" ? -1 : 1;
