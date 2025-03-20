@@ -11,3 +11,8 @@ export type TableItem = {
 export type TableProps = {
   data: TableItem[];
 };
+
+export type SortConfigRows = {
+  key: keyof TableItem;
+  setting: 'ascending' | 'descending';
+};

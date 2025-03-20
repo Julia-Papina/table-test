@@ -1,5 +1,9 @@
-import React, { JSX, useState } from "react";
-import { TableItem, TableProps } from "../utils/types/TableType";
+import React, { JSX, useState, useMemo } from "react";
+import {
+  TableItem,
+  TableProps,
+  SortConfigRows,
+} from "../utils/types/TableType";
 import "./Table.css";
 
 // Преобразовала данные в древовидную структуру
@@ -27,6 +31,9 @@ const buildTreeElements = (data: TableItem[]): TableItem[] => {
 const Table: React.FC<TableProps> = ({ data }) => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]); // состояние раскрытие строк
   const [filterActiveRows, setFilterActiveRows] = useState<boolean>(false); //состояние фильтрации строк
+  const [sortConfigRows, setSortConfigRows] = useState<SortConfigRows | null>(
+    null
+  ); //состояние сортировки строк
 
   const handleFilterChange = () => {
     setFilterActiveRows(!filterActiveRows);
@@ -42,9 +49,43 @@ const Table: React.FC<TableProps> = ({ data }) => {
 
   const treeData = buildTreeElements(data);
 
+  const handleSort = (key: keyof TableItem) => {
+    let setting: "ascending" | "descending" = "ascending";
+
+    if (
+      sortConfigRows !== null &&
+      sortConfigRows.key === key &&
+      sortConfigRows.setting === "ascending"
+    ) {
+      setting = "descending";
+    }
+
+    setSortConfigRows({ key, setting });
+  };
+
+  const sortedData = useMemo(() => {
+    const sortableData = [...treeData];
+    if (sortConfigRows !== null) {
+      const { key, setting } = sortConfigRows;
+      sortableData.sort((a, b) => {
+        const valueA = a[key] ?? ""; // Используем значение по умолчанию, если a[key] undefined
+        const valueB = b[key] ?? ""; // Используем значение по умолчанию, если b[key] undefined
+
+        if (valueA < valueB) {
+          return setting === "ascending" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return setting === "ascending" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  }, [treeData, sortConfigRows]);
+
   const filteredData = filterActiveRows
-    ? treeData.filter((item) => item.isActive)
-    : treeData;
+    ? sortedData.filter((item) => item.isActive)
+    : sortedData;
 
   // Функция для отрисовки строк таблицы и их дочерних элементов (если они есть)
   const renderRowTable = (item: TableItem, level: number = 0): JSX.Element => {
@@ -66,7 +107,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
           </td>
           <td>{item.email}</td>
           <td>{item.balance}</td>
-          <td>{item.isActive ? "Active" : "Inactive"}</td>
+          <td>{item.isActive ? "Активный" : "Неактивный"}</td>
         </tr>
         {isExpanded &&
           hasChildren &&
@@ -76,17 +117,23 @@ const Table: React.FC<TableProps> = ({ data }) => {
   };
 
   return (
-    <div>
+    <div className="table-container">
       <button className="filter-button" onClick={handleFilterChange}>
         {filterActiveRows ? "Смотреть все" : "Активные"}
       </button>
       <table className="table">
         <thead>
           <tr>
-            <th className="table__th">Имя</th>
-            <th className="table__th">Email</th>
-            <th className="table__th">Баланс</th>
-            <th className="table__th">Статус</th>
+            <th className="table__th" onClick={() => handleSort("name")}>
+              Имя
+            </th>
+            <th className="table__th" onClick={() => handleSort("email")}>
+              Email
+            </th>
+            <th className="table__th" onClick={() => handleSort("balance")}>
+              Баланс
+            </th>
+            <th className="table__th_status">Статус</th>
           </tr>
         </thead>
         <tbody>{filteredData.map((item) => renderRowTable(item))}</tbody>
