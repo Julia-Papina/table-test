@@ -20,3 +20,18 @@
 .table__th:hover {
   background-color: #e69a5c;
 }
+
+.filter-button {
+  background-color: #e69a5c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+.filter-button:hover {
+  background-color: #754b0b;
+}
